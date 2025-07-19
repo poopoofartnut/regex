@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Regex Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        input, button, textarea {
+            font-size: 1rem;
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Regex Generator to Filter Out Words</h1>
+
+<input type="text" id="wordInput" placeholder="Enter words separated by commas..." />
+<button onclick="handleGenerate()">Generate Regex</button>
+
+<h3>Generated Regex:</h3>
+<textarea id="regexOutput" readonly></textarea>
+
+<script>
+function generateRegex(word) {
+    const noise = '[\\p{P}\\p{S}\\p{Z}\\s~_^\\-=*]*?';
+
+    const charMap = {
+        'a': `(?:[aA@4àáâäæãåαа🅰️🇦𝔞𝕒𝖆𝒶𝓪𝔸𝖆𝒜]+|/\\\\|\\\\/|\\(\\)|\\{\\}|\\[\\]|<>|/[_\\-]?\\\\)`,
+        'b': `(?:[bB8ßβ🅱️🇧𝔟𝕓𝖇𝒷𝓫𝔹𝖇𝒝]+|13|\\|3|\\|\\)\\|)`,
+        'c': `(?:[cCç¢🅲🇨𝔠𝕔𝖈𝒸𝓬ℂ𝖈𝒞]+|\\(+|\\[+|\\{+|<+|[<\\[{][_\\-=~*]*[>\\]}])`,
+        'd': `(?:[dD🅳🇩𝔡𝕕𝖉𝒹𝓭𝔻𝖉𝒟]+|\\|\\)+|\\)\\|+)`,
+        'e': `(?:[eE3èéêë€ε🅴🇪𝔢𝕖𝖊𝑒𝓮ℰ𝖇𝒠]+)`,
+        'f': `(?:[fFƒ🅵🇫𝔣𝕗𝖋𝒻𝓯𝔽𝖋𝒡]+|ph)`,
+        'g': `(?:[gG69🅶🇬𝔤𝕘𝖌𝓰𝓰𝔾𝖌𝒢]+)`,
+        'h': `(?:[hHнн🅷🇭𝔥𝕙𝖍𝒽𝓱ℋ𝖍𝒣]+|#|\\|-\\|)`,
+        'i': `(?:[iI1!|íìîï¡🅸🇮𝔦𝕚𝖎𝒾𝓲ℐ𝖎𝓘]+|[|!lL]+|\\]\\[|\\|\\|)`,
+        'j': `(?:[jJ🅹🇯𝔧𝕛𝖏𝒿𝓳𝒥𝖏]+|_\\|+)`,
+        'k': `(?:[kKκ🅺🇰𝔨𝕜𝖐𝓀𝓴𝓚K]+|\\|<|\\|\\{|\\|\\(|\\)\\|)`,
+        'l': `(?:[lL1|!🅻🇱𝔩𝕝𝖑𝓁𝓵ℒ𝖑𝓛]+|\\|+|!)`,
+        'm': `(?:[mMм🅼🇲𝔪𝕞𝖒𝓂𝓶ℳ𝖒𝓜]+|/\\\\/\\\\|\\|\\/\\|\\/|nn|IVI|/V\\\\)`,
+        'n': `(?:[nNñηи🅽🇳𝔫𝕟𝖓𝓃𝓷ℕ𝖓𝓝]+|/\\\\/|\\\\/\\\\|\\|\\|)`,
+        'o': `(?:[oO0°οоøⓞ🅾️🇴○◎◯🅾️]+|\\(\\)|\\[\\]|\\{\\}|\\<\\>|\\|\\||\\|O\\||0_|_0|\\(O\\)|_\\(\\)_|{[]}|[(|)]|[⭘⭕️🔵🟢🟣🟠🟡🟤⚪️⚫️🔘])`,
+        'p': `(?:[pPρр🅿️🇵𝔭𝕡𝖕𝓅𝓹ℙ𝖕𝓟]+|\\|\\*|q\\))`,
+        'q': `(?:[qQ🆀🇶𝔮𝕢𝖖𝓆𝓺ℚ𝖖𝓠]+|9)`,
+        'r': `(?:[rRя🆁🇷𝔯𝕣𝖗𝓇𝓻ℝ𝖗𝓡]+|\\|2|12|\\|\\?)`,
+        's': `(?:[sS5$§🆂🇸𝔰𝕤𝖘𝓈𝓼𝓢]+|z|2|\\$)`,
+        't': `(?:[tT7†🆃🇹𝔱𝕥𝖙𝓉𝓽𝓣]+|\\+|7|\\|\\-|\\-\\|)`,
+        'u': `(?:[uUυυ🆄🇺𝔲𝕦𝖚𝓊𝓾𝓤]+|\\(\\)|v\\v|\\|_\\|)`,
+        'v': `(?:[vVν🆅🇻𝔳𝕧𝖛𝓋𝓿𝓥]+|\\\\/|\\|\\/)`,
+        'w': `(?:[wWωш🆆🇼𝔴𝕨𝖜𝓌𝔀𝓦]+|\\\\/\\\\/|\\|/\\|/|vv|VV|\\|\\/\\|\\/|\\|V\\|)`,
+        'x': `(?:[xX×✕✖️❌🆇🇽𝔵𝕩𝖝𝓍𝔁𝓧]+|%|><|\\)\\()`,
+        'y': `(?:[yY¥γу🆈🇾𝔶𝕪𝖞𝓎𝔂𝓨]+|j\\|)`,
+        'z': `(?:[zZ2ζ🆉🇿𝔷𝕫𝖟𝓏𝔃ℤ]+|s|5)`
+    };
+
+    let pattern = '';
+
+    for (const char of word.toLowerCase()) {
+        if (charMap[char]) {
+            pattern += `${charMap[char]}${noise}`;
+        } else {
+            // Escape special regex characters if not in charMap
+            const escapedChar = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            pattern += `${escapedChar}${noise}`;
+        }
+    }
+
+    return pattern;
+}
+
+function handleGenerate() {
+    const input = document.getElementById('wordInput').value.trim();
+    if (!input) {
+        document.getElementById('regexOutput').value = 'Please enter at least one word.';
+        return;
+    }
+
+    const words = input.split(',').map(w => w.trim()).filter(w => w.length > 0);
+    if (words.length === 0) {
+        document.getElementById('regexOutput').value = 'Please enter valid words.';
+        return;
+    }
+
+    const combinedPattern = words.map(word => `(?:${generateRegex(word)})`).join('|');
+
+    // Just output regex as a string with delimiters and flags — no compilation
+    const regexString = `/${combinedPattern}/giu`;
+
+    document.getElementById('regexOutput').value = regexString;
+}
+
+</script>
+
+</body>
+</html>
