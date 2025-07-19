@@ -97,11 +97,14 @@ function handleGenerate() {
 
     const combinedPattern = words.map(word => `(?:${generateRegex(word)})`).join('|');
 
-    // Just output regex as a string with delimiters and flags — no compilation
-    const regexString = `/${combinedPattern}/giu`;
+    // Escape slashes inside the pattern for safe delimiter usage
+    const escapedPattern = combinedPattern.replace(/\//g, '\\/');
+
+    const regexString = `${escapedPattern}`;
 
     document.getElementById('regexOutput').value = regexString;
 }
+
 
 </script>
 
